@@ -40,4 +40,8 @@
         │   ├── services/
         │   └── App.js
 
-4. Dependencies Added
+4. Dependencies Added, .env added to gitignore
+
+5. .env Updated
+
+6. migrations/initial.sql updated for basic users table
