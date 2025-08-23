@@ -39,3 +39,5 @@
         │   ├── components/
         │   ├── services/
         │   └── App.js
+
+4. Dependencies Added

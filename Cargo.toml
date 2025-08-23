@@ -4,4 +4,39 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+# Core Actix Web framework - provides HTTP server functionality
 actix-web = "4.11.0"
+
+# CORS middleware for enabling React frontend communication
+actix-cors = "0.7.1"
+
+# Async runtime that Actix Web is built on
+tokio = { version = "1.0", features = ["full"] }
+
+# PostgreSQL driver with async support
+tokio-postgres = "0.7"
+
+# Connection pooling for database connections
+deadpool-postgres = "0.14.1"
+
+# JSON serialization/deserialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# UUID generation for unique identifiers
+uuid = { version = "1.0", features = ["v4", "serde"] }
+
+# Environment variable management
+dotenv = "0.15"
+
+# Error handling utilities
+anyhow = "1.0"
+thiserror = "2.0.16"
+
+# Logging framework
+log = "0.4"
+env_logger = "0.11.8"
+
+[dev-dependencies]
+# Testing utilities for HTTP requests
+actix-rt = "2.8"
