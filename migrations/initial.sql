@@ -18,10 +18,6 @@ CREATE TABLE users (
 );
 
 
--- Index for name to enable faster searching
-CREATE INDEX idx_users_name ON users(name);
-
-
 -- Trigger for auto updates on updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
