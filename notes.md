@@ -49,3 +49,5 @@
 7. config/mod.rs setup
 
 8. database/connection.rs setup
+
+9. database/mod.rs setup, for clean API access
