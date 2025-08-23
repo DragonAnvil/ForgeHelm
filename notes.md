@@ -45,3 +45,7 @@
 5. .env Updated
 
 6. migrations/initial.sql updated for basic users table
+
+7. config/mod.rs setup
+
+8. database/connection.rs setup

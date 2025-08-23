@@ -22,6 +22,7 @@ CREATE TABLE users (
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
+    -- Grabs new timestamp and applies it as new value
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
@@ -30,4 +31,6 @@ $$ language 'plpgsql';
 CREATE TRIGGER update_users_updated_at
     BEFORE UPDATE ON users
     FOR EACH ROW
+    -- Only update if name is changed in table
+    WHEN (OLD.name IS DISTINCT FROM NEW.name)
     EXECUTE FUNCTION update_updated_at_column();
