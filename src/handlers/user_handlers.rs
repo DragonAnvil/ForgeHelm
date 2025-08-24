@@ -90,7 +90,7 @@ pub async fn get_user(
     // Extracts the Uuid value from the Actix Web Path extractor and assigns it to "user_id"
     let user_id = path.into_inner();
     
-        // Create the Service Instance
+    // Create the Service Instance
     // This creates a new instance of the User Service which encapsulates all busness logic
     // Passes a clone of the database pool reference to the service which allows interaction with database
     // "pool" is Type of web::Data<DbPool> which is Actix Web for shared state
@@ -122,15 +122,18 @@ pub async fn get_user(
 // Query Parameters for Endpoint: get_users
 // 
 // This Struct demonstrates how to handle Optional query parameters in a Type-Safe way
-// Actix Web can auto Deserialize Query Strings into this Struct
-// Much safer than manually parsing Query Parameters
+// Ths Struct defines the possible Query PArameters for the "get_users" endpoint
+// Each field corresponds to a query parameter in the URL
+// All feilds are optional, allowing felixible requests
+// Actix Web auto deserializes query strings into this struct, ensuring Type-Safety
+// This is much safer and cleaner than manually parsing query parameters
 #[derive(serde::Deserialize)]
 pub struct GetUsersQuery {
-    // 
+    // Maximum number of Users to Return (Pagination)
     pub limit: Option<i64>,
-    // 
+    // Number of Users to Skip (Pagination)
     pub offset: Option<i64>,
-    // 
+    // Optional Search Term to filter Users by name or other critria
     pub search: Option<String>,
 }
 
@@ -139,30 +142,59 @@ pub struct GetUsersQuery {
 // This Handler shows how to handle complex Query Parameters
 // Demonstrates how different business logic paths can share the same HTTP Endpoint
 pub async fn get_users(
-    // 
+    // This injects a wrapped connection to a database pool
+    // "web::Data" This allows Actix Web to manage the data
+    // This enables thread-safety = allows other multiple threads to use at same time
+    // Shared State allows coherence between multiple threads
     pool: web::Data<DbPool>,
-    // 
+    // This tells Actix Web to extract query parameters from the URL and auto deserialize into Rust Struct "GetUserQuery"
+    // "web::Query<T>" = Actix Web Extractor for Query Parameters
+    //      Takes the Query String from URL and tries to convert it into the type specified using Serde for Deserialization
+    // "GetUsersQuery" is the Rust Struct defined just above
     query: web::Query<GetUsersQuery>,
+
+    // If Success, Return an HTTP Response
+    // If FAilure, Return a custom AppError
 ) -> Result<HttpResponse, AppError> {
-    // 
+
+    // Create the Service Instance
+    // This creates a new instance of the User Service which encapsulates all busness logic
+    // Passes a clone of the database pool reference to the service which allows interaction with database
+    // "pool" is Type of web::Data<DbPool> which is Actix Web for shared state
+    // ".get_ref()" Returns a reference to the DbPool
+    // ".clone()" Clones the database pool ref, think of this as a handle or pointer to the actual pool
+    // "UserService::new(...)" Calls the constructor for UserService, passing in the cloned pool 
     let user_service = UserService::new(pool.get_ref().clone());
 
-    // 
-    let users = if let Some(ref search_term) = queary.search {
-        // If a search term is provided, use the search functionality
+    // If the Client provides a search term, it performs a search
+    // Otherwise, return a paginated list of users
+    // "if let Some(ref search_term"
+    //      Checks if the "search" field in "GetUsersQuery" Struct is Some (Client provided search term in query string)
+    //      If so, bind "search_terms" to a ref to the string
+    let users = if let Some(ref search_term) = query.search {
+        // If a search term is provided
+        //      Call "search_users_by_name" through instance "user_service" using "search_term"
         user_service.search_users_by_name(search_term).await?
     } else {
-        // Otherwise, Return paginated results
+        // Otherwise,
+        //      Call "get_users" through instance "user_service"
+        //      using "limit" and "offset" from "query" parameters to control pagination
         user_service.get_users(query.limit, query.offset).await?
     };
 
-    // Convert Vec<User> to Vec<UserResponse>
-    // "collect()" gathers iterator results into a Vec
+    // Converts a list of internal user models "User" into a list of response DTOs "UserResponse"
+    // Safe and Formatted for API
     let response : Vec<UserResponse> = users
+        // Takes ownership of the users vector and creates an iterator over its elements
         .into_iter()
-        .map(USerResponse::from)
+        // For each User in the iterator, call "UserResponse::from(user)" to convert it into a UserResponse
+        .map(UserResponse::from)
+        // Collects the mapped results into a new Vec<UserResponse>
+        // This Result is a vector of DTOs ready for serialization
         .collect();
 
+    // Serializes the response vector to JSON and sends it in the HTTP response body
+    // Returns HTTP status code 200 OK
     Ok(HttpResponse::Ok().json(responses))
 }
 
@@ -171,29 +203,46 @@ pub async fn get_users(
 // This Handler combines Path Parameters (for User ID) with a JSON body (for Update Data)
 // Demonstrates how to handle partial updates and return appropriate status codes
 pub async fn update_user(
-    // 
+    // This injects a wrapped connection to a database pool
+    // "web::Data" This allows Actix Web to manage the data
+    // This enables thread-safety = allows other multiple threads to use at same time
+    // Shared State allows coherence between multiple threads
     pool: web::Data<DbPool>,
-    // 
+    // Tells Actix Web to extract the Rust Type "Uuid" from the URL
     path: web::Path<Uuid>,
-    // 
+    // Actix Web auto deserializes incoming JSON body into a UpdateUserRequest Struct
+    // This ensures Type Safety and Validation immediately
     json: web::Json<UpdateUserRequest>,
+
+    // If Success, Return an HTTP Response
+    // If Failure, Return a custom AppError
 ) -> Result<HttpResponse, AppError> {
-    // 
+    // Extracts the Uuid value from the Actix Web Path extractor and assigns it to "user_id"
     let user_id = path.into_inner();
-    // 
+
+    // Create the Service Instance
+    // This creates a new instance of the User Service which encapsulates all busness logic
+    // Passes a clone of the database pool reference to the service which allows interaction with database
+    // "pool" is Type of web::Data<DbPool> which is Actix Web for shared state
+    // ".get_ref()" Returns a reference to the DbPool
+    // ".clone()" Clones the database pool ref, think of this as a handle or pointer to the actual pool
+    // "UserService::new(...)" Calls the constructor for UserService, passing in the cloned pool 
     let user_service = UserService::new(pool.get_ref().clone());
 
-    // 
+// Call the "update_user" business logic asynchronously on the "user_service" instance.
+// Pass the "user_id" (extracted from the URL path as a Uuid) and the deserialized update data from the JSON body.
+// The ".await?" waits for the async operation and propagates any errors.
+// The result is an Option<User>, which is matched below to handle success or not-found.
     match user_service.update_user(user_id, json.into_inner()).await? {
-        // 
+        // If the update operation returns Some(user), it means the user was found and updated.
+        // Convert the internal User model to a UserResponse DTO and return a 200 OK HTTP response with the updated user as JSON.
         Some(user) => {
-            // 
             let response = UserResponse::from(user);
-            // 
             Ok(HttpResponse::Ok().json(response))
         }
         None => {
-            // If no User found for update, Return 404 Status Code
+            // If the update operation returns None, it means no user was found for the given ID.
+            // Return a 404 Not Found error using the custom AppError type for consistent error handling.
             Err(AppError::user_not_found(user_id))
         }
     }
