@@ -76,24 +76,41 @@ pub async fn create_user(
 // This handlers shows how to extract Path Parameters and handle errors
 // 
 pub async fn get_user(
+    // This injects a wrapped connection to a database pool
+    // "web::Data" This allows Actix Web to manage the data
+    // This enables thread-safety = allows other multiple threads to use at same time
+    // Shared State allows coherence between multiple threads
     pool: web::Data<DbPool>,
+    // Tells Actix Web to extract the Rust Type "Uuid" from the URL
     path: web::Path<Uuid>,      // Extract UUID from URL Path
+
+    // On Success, Return an HTTP Response
+    // On Failure, Return a custom AppError
 ) -> Result<HttpResponse, AppError> {
-    // 
+    // Extracts the Uuid value from the Actix Web Path extractor and assigns it to "user_id"
     let user_id = path.into_inner();
-    // 
+    
+        // Create the Service Instance
+    // This creates a new instance of the User Service which encapsulates all busness logic
+    // Passes a clone of the database pool reference to the service which allows interaction with database
+    // "pool" is Type of web::Data<DbPool> which is Actix Web for shared state
+    // ".get_ref()" Returns a reference to the DbPool
+    // ".clone()" Clones the database pool ref, think of this as a handle or pointer to the actual pool
+    // "UserService::new(...)" Calls the constructor for UserService, passing in the cloned pool
     let user_service = UserService::new(pool.get_ref().clone());
 
-    // 
+    // Call the business logic "get_user_by_id" asynchronously on the instance "user_service"
+    // using "user_id" parameter from above
+    // ".await?" propogates any errors
     match user_service.get_user_by_id(user_id).await? {
-        // 
+        // "Option:Some" = If a user is found, convert the internal user model to a UserResponse DTO
+        // DTO = Data Transfer Object
+        // Return a "200 OK HTTP Response" with User Data as JSON
         Some(user) => {
-            // 
             let response = UserResponse::from(user);
-            // 
             Ok(HttpResponse::Ok().json(response))
         }
-        // 
+        // "Option:None" = If no user is found, create and return a 404 Status Code Error using custom AppError Type
         None => {
             // Return "404 Error" using custom error type
             Err(AppError::user_not_found(user_id))
