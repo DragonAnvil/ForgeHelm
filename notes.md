@@ -55,3 +55,5 @@
 10. models/user.rs && mod.rs setup, for Data Structure validation
 
 11. utils/errors.rs && mod.rs setup, for Error Handling and Error Response Formatting
+
+12. Removed .env from main
