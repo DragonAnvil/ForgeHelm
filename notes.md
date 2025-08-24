@@ -51,3 +51,7 @@
 8. database/connection.rs setup
 
 9. database/mod.rs setup, for clean API access
+
+10. models/user.rs && mod.rs setup, for Data Structure validation
+
+11. utils/errors.rs && mod.rs setup, for Error Handling and Error Response Formatting
