@@ -1,20 +1,33 @@
-// 
+// Import Actix Web Types
+// web          : used for extracting data from requests (Path, Query, JSON)
+// HttpResponse : used to build HTTP Responses
+// Result       : used for Handler Retur Types, allows Error Handling
 use actix_web::{web, HttpResponse, Result};
-// 
+// Import Uuid Type from the uuid crate
+// Need this for handling user Ids
 use uuid::Uuid;
 
-// 
+// Import the database connection pool type
+// DbPool is unique to this project and is the database connection manager
+// Enables Handlers to access the database
 use crate::database::DbPool;
-// 
+// Import User-Related Data Structures:
 use crate::models::user::{CreateUserRequest, UpdateUserRequest, UserResponse};
-// 
+// Import the User Service:
+// UserService : Contains Business Logic for User Operations (Create, Read, Update, Delete)
 use crate::services::user_service::UserService;
-// 
+// Import Project Specific Custom Error Type:
+// AppError: used for consistent error handling and response formatting across handlers
 use crate::utils::errors::AppError;
 
 
 //! Create a New User
 //! 
+//! Purpose: 
+//!     Recieve JSON payload from Client
+//!     Validate and Process Data
+//!     Create New User in Database
+//!     Return Response with Created Users Data
 //! This handler demonstrates the usual flow of an HTTP Request in Actix Web
 //! 1. Extract & Validate the Request Data
 //! 2. Pass Data to the Service Layer for Business Logic
@@ -22,15 +35,31 @@ use crate::utils::errors::AppError;
 //! 
 //! 
 pub async fn create_user(
+    // "web::Data" is a wrapper for thread-safe shared state
+    // Actix Web injects a shared database connection pool into this handler
     pool: web::Data<DbPool>,            // Dependency Injection of Database Pool
+    // Actix Web auto deserializes incoming JSON body into a CreateUserRequest Struct
+    // This ensures Type Safety and Validation immediately
     json: web::Json<CreateUserRequest>, // Auto JSON Deserialization
+
+    // On Success, Return an HTTP Response
+    // On Failure, Return a custom AppError
 ) -> Result<HttpResponse, AppError> {
     
     // Create the Service Instance
+    // This creates a new instance of the User Service which encapsulates all busness logic
+    // Passes a clone of the database pool reference to the service which allows interaction with database
+    // "pool" is Type of web::Data<DbPool> which is Actix Web for shared state
+    // ".get_ref()" Returns a reference to the DbPool
+    // ".clone()" Clones the database pool ref, think of this as a handle or pointer to the actual pool
+    // "UserService::new(...)" Calls the constructor for UserService, passing in the cloned pool
     let user_service = UserService::new(pool.get_ref().clone());
 
-    // Call the Business Logic
-    // "into_inner()" method extracts the CreateUserRequest from web::Json wrapper
+    // Call the Business Logic "create_user" from "user_service" to create a new user
+    // json is pulled from above parameter, already deserialized
+    // ".into_inner()" extracts the actual CreateUserRequest struct from the wrapper "json" giving direct access to the suer creation data
+    // "json.into_inner()" = CreateUserRequest Struct data
+    // "create_user" contains all the business logic for creating a user
     let user = user_service.create_user(json.into_inner()).await?;
 
     // Convert the User into a UserResponse and Return as JSON
