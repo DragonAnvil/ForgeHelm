@@ -27,6 +27,9 @@ deadpool-postgres = "0.11"
 # Load environment variables from .env
 dotenvy = "0.15"
 
+# Chrono for timestamps
+chrono = "0.4"
+
 # Error Handling and Logging
 thiserror = "1.0"
 env_logger = "0.10"
