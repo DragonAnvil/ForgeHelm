@@ -4,3 +4,4 @@
     rest.bat added for database reseting and setup
 
 3. Rust Server Startup
+3. config.rs setup
