@@ -1,0 +1,1 @@
+1. Setup Rust project, added dependencies
