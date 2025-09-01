@@ -16,6 +16,9 @@
 
 13. models.rs updated for workspaces, workspace_tools, and spreadsheet Structs
 
+14. queries.rs updated for workspace queries
+
+15. handlers.rs updated for workspace handlers
 
 Flowchart
 Routes.rs > Handlers.rs > Query.rs > Models.rs
