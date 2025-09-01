@@ -20,6 +20,8 @@
 
 15. handlers.rs updated for workspace handlers
 
+16. routes.rs updated for workspace routes
+
 Flowchart
 Routes.rs > Handlers.rs > Query.rs > Models.rs
 

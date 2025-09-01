@@ -21,7 +21,7 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
                 .route(web::get().to(list_items_handler))           // GET      /items
                 .route(web::post().to(create_item_handler))         // POST     /items
                 .route(web::put().to(update_item_handler))          // PUT      /items
-                .route(web::delete().to(delete_item_handler))       S// DELETE   /items
+                .route(web::delete().to(delete_item_handler))       // DELETE   /items
         )
         .service(
             web::resource("/workspaces")
