@@ -71,3 +71,42 @@ pub struct DeleteWorkspace {
     pub id: i32,
 }
 
+
+// Workspace Tools Structs ---------------------------------
+
+// Workspace Tools
+#[derive(Serialize)]
+pub struct WorkspaceTools {
+    pub id: i32,
+    pub workspace_id: i32,
+    pub name: String,
+    pub description: String,
+    pub doctype: String,            // SQL table schema is "type", might need to revisit
+    pub owner: String,
+    updated_at: DateTime<Utc>,
+    created_at: DateTime<Utc>,
+}
+
+// Create WorkspaceTool
+#[derive(Deserialize)]
+pub struct CreateWorkspaceTool {
+    pub name: String,
+    pub description: String,
+    pub doctype: String,
+    pub owner: String,
+}
+
+// Update WorkspaceTool
+#[derive(Deserialize)]
+pub struct UpdateWorkspaceTool {
+    pub id: i32,
+    pub name: Option<String>,           // doctype is left off, cannot be changed after creation
+    pub description: Option<String>,    // might be an option if can convert to different views
+    pub owner: Option<String>,
+}
+
+// Delete WorkspaceTool
+#[derive(Deserialize)]
+pub struct DeleteWorkspaceTool {
+    pub id: i32,
+}
