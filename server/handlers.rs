@@ -28,6 +28,7 @@ use crate::database::queries::{
     create_item,
     update_item,
     delete_item,
+    get_workspace_column_names,
     list_workspaces,
     create_workspace,
     update_workspace,
@@ -96,6 +97,18 @@ pub async fn delete_item_handler(pool: web::Data<PgPool>, payload: web::Json<Del
         }
         // 
         Err(e) => HttpResponse::InternalServerError().body(format!("Error: {}", e)),
+    }
+}
+
+// Handler - Get Workspace Column Names
+pub async fn get_workspace_column_name_handler(pool: web::Data<PgPool>) -> HttpResponse {
+    // 
+    match get_workspace_column_names(&pool).await {
+        Ok(columns) => HttpResponse::Ok().json(columns),
+        Err(e) => {
+            eprintln!("Error fetching workspace columns: {:?}", e);
+            HttpResponse::InternalServerError().body("Failed to fetch columns")
+        }
     }
 }
 
