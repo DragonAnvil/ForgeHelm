@@ -3,6 +3,10 @@ name = "ForgeHelm"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "forgehelm"
+path = "server/main.rs"
+
 [dependencies]
 # HTTP Server & Routing
 actix-web = "4"

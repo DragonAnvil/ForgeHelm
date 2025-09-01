@@ -1,0 +1,23 @@
+@font-face {
+    font-family: 'MyFont';
+    src: url('/fonts/Disket-Mono-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'MyFont', sans-serif;
+}
+
+html, body {
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+}
+
+.inputRowWorkspaces:focus {
+    border-color: #ff9e00; /* Custom border color */
+    outline: none;         /* Remove default outline */
+    box-shadow: 0 0 4px #ff9e00; /* Optional: add custom shadow */
+}
