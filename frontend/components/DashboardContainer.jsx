@@ -63,7 +63,7 @@ function DashboardContainer({addNew, toggleAddNew, showWorkspaceTools}) {
 
     // Fetch workspace data from backend when component mounts
     useEffect(() => {
-        fetch('http://localhost:8080/items')
+        fetch('http://localhost:8080/workspaces')
         .then(res => res.json())
         .then(data => setWorkspacesData(data))
         .catch(error => console.error('Error fetching items:', error));
@@ -88,7 +88,7 @@ function DashboardContainer({addNew, toggleAddNew, showWorkspaceTools}) {
     useEffect(() => {
 
         if(workspacesData.length === 0) {
-            fetch('http://localhost:3000/api/workspaces/columns')
+            fetch('http://localhost:8080/workspaces/columns')
             .then(res => res.json())
             .then(data => setColumns(data))
             .catch(error => console.error('Error fetching workspaces header:', error));
@@ -97,7 +97,7 @@ function DashboardContainer({addNew, toggleAddNew, showWorkspaceTools}) {
         if (workspacesData.length != 0) {
             const interval = setInterval(() => {
                 // Refresh data every 10 seconds
-                fetch('http://localhost:3000/api/workspaces')
+                fetch('http://localhost:8080/workspaces')
                 .then(res => res.json())
                 .then(data => {
                     // Only update if not currently editing
@@ -146,7 +146,7 @@ function DashboardContainer({addNew, toggleAddNew, showWorkspaceTools}) {
             setWorkspacesData(prev => [...prev, newWorkspace]);
             
             // POST Request
-            fetch('http://localhost:3000/api/workspaces', {
+            fetch('http://localhost:8080/workspaces', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -207,7 +207,7 @@ function DashboardContainer({addNew, toggleAddNew, showWorkspaceTools}) {
 
                 console.log(`newValue: ${newValue}`)
                 // Send PUT request to backend to update cell value in database table
-                await fetch('http://localhost:3000/api/workspaces', {
+                await fetch('http://localhost:8080/workspaces', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -244,7 +244,7 @@ function DashboardContainer({addNew, toggleAddNew, showWorkspaceTools}) {
 
     function deleteWorkspace(id) {
         // Send DELETE request to backend to delete workspace
-        fetch('http://localhost:3000/api/workspaces', {
+        fetch('http://localhost:8080/workspaces', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
