@@ -23,6 +23,13 @@ pub struct CreateItem {
 // Update Item Struct
 #[derive(Deserialize)]
 pub struct UpdateItem {
+    pub id: i32,                        // Unique Identifier for Item, used to find correct Item for Update Query
     pub name: Option<String>,           // Option is used here for both
     pub description: Option<String>,    // because the fields could be empty with an update
+}
+
+// Delete Item Struct
+#[derive(Deserialize)]
+pub struct DeleteItem {
+    pub id: i32,                        // Needed to find correct Item to Delete in Query
 }
