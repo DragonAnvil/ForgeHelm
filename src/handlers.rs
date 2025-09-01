@@ -2,16 +2,16 @@
 use actix_web::{web, HttpResponse, Responder};
 
 // Call local crate "db.rs" and Pub Struct "PgPool" for use
-use crate::db::PgPool;
+use crate::database::db::PgPool;
 // Call local crate "models.rs" and Pub Structs for use
-use crate::models::{CreateItem, UpdateItem};
+use crate::models::{CreateItem, UpdateItem, DeleteItem};
 // Call local crate "database/queries.rs" and Public Functions for CRUD DB Queries
 use crate::database::queries::{list_items, create_item, update_item, delete_item};
 
 // Handler - GET All Items
 // pool is shared ref to database connection pool
 // web::Data<PgPool> Actix Web wraps Pool in a special type to allow safe sharing between requests
-pub async fn list_items(pool: web::Data<PgPool>) -> impl Responder {
+pub async fn list_items_handler(pool: web::Data<PgPool>) -> impl Responder {
     // DB Function to get all items...
     // Rust Match statement, like switch/case
     // list_items: Database Query Function
@@ -33,7 +33,7 @@ pub async fn list_items(pool: web::Data<PgPool>) -> impl Responder {
 // future...
 
 // Handler - POST - Create Item 
-pub async fn create_item(pool: web::Data<PgPool>, payload: web::Json<CreateItem>) -> impl Responder {
+pub async fn create_item_handler(pool: web::Data<PgPool>, payload: web::Json<CreateItem>) -> impl Responder {
     // Validate input and call DB function to create item
     // pass reference to pool and payload(CreateItem) to "create_item" DB Query Function
     // .into_inner() is needed to extract the struct from the Actix Web wrapper that is payload
@@ -46,7 +46,7 @@ pub async fn create_item(pool: web::Data<PgPool>, payload: web::Json<CreateItem>
 }
 
 // Handler - PUT - Update Item
-pub async fn update_item(pool: web::Data<PgPool>, payload: web::Json<UpdateItem>) -> impl Responder {
+pub async fn update_item_handler(pool: web::Data<PgPool>, payload: web::Json<UpdateItem>) -> impl Responder {
     // 
     match update_item(pool.get_ref(), &payload.into_inner()).await {
         // 
@@ -57,7 +57,7 @@ pub async fn update_item(pool: web::Data<PgPool>, payload: web::Json<UpdateItem>
 }
 
 // Handler - DELETE - Delete Item
-pub async fn delete_item(pool: web::Data<PgPool>, payload: web::Json<DeleteItem>) -> impl Responder {
+pub async fn delete_item_handler(pool: web::Data<PgPool>, payload: web::Json<DeleteItem>) -> impl Responder {
     // 
     match delete_item(pool.get_ref(), &payload.into_inner()).await {
         // 

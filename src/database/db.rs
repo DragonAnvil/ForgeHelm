@@ -15,17 +15,17 @@ pub fn create_pool(cfg: &Config) -> PgPool {
     // Configuring ManagerConfig Struct
     // RecyclingMethod to be set to Fast
     let mgr_config = ManagerConfig { recycling_method: RecyclingMethod::Fast };
+    // 
+    let pg_config = cfg.database_url.parse::<tokio_postgres::Config>().unwrap();
 
     // Configure Manager Struct
     let mgr = Manager::from_config(
-        // cfg is Type Config, pull database_url from Struct
-        cfg.database_url.parse().unwrap(), 
-        // This sets up a new empty config object from tokio
-        tokio_postgres::Config::new(),
+        //
+        pg_config,
         // Specifies the connection should use no TLS encryption
         NoTls,
         // This is the pool behavior configuration from above
-        mgr_config
+        mgr_config,
     );
     
     // Start building a pool using "mgr" struct
@@ -37,3 +37,4 @@ pub fn create_pool(cfg: &Config) -> PgPool {
     // Extracts the Pool from Result immediately, will crash if invalid config
     .unwrap()
 }
+

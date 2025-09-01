@@ -15,7 +15,7 @@ impl Config {
         // Read and Access data from .env file
         dotenv().ok();
         // Create var "database_url" from .env variable named "DATABASE_URL", with expectation set
-        let databse_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+        let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
         // Create host variable from .env var named "HOST"
         // env::Var("HOST") retrieves and returns Type "Result<T, Error>"
         // If there is an Error, then .unwrap_or_else is used to ignore the error

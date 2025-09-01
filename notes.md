@@ -5,3 +5,7 @@
 
 3. Rust Server Startup
 3. config.rs setup
+3. db.rs setup
+3. models.rs setup
+3. queries.rs setup
+3. handlers.rs setup

@@ -1,24 +1,30 @@
 // 
 use tokio_postgres::Row;
+use chrono::{DateTime, Utc};
 
 // Use local crate "database/db.rs", us Type "PgPool"
 use crate::database::db::PgPool;
 // Use local crate "models.rs", use Struct "Item"
-use crate::models::{Item, CreateItem, UpdateItem};
+use crate::models::{Item, CreateItem, UpdateItem, DeleteItem};
+
+// Helper to convert SystemTime to DateTime<Utc>
+fn system_time_to_datetime(st: std::time::SystemTime) -> chrono::DateTime<chrono::Utc> {
+    chrono::DateTime::<chrono::Utc>::from(st)
+}
 
 // Helper Function to map a Row to an Item
 fn row_to_item(row: &Row) -> Item {
     Item {
         id: row.get("id"),
         name: row.get("name"),
-        decription: row.get("description"),
-        created_at: row.get("created_at"),
+        description: row.get("description"),
+        created_at: system_time_to_datetime(row.get::<_, std::time::SystemTime>("created_at")),
     }
 }
 
 // Query Function: Get All Items
 // Return Vector of Item Structs or standard error
-pub async fn list_items(pool: &Pool) -> Result<Vec<Item>, Box<dyn std::error::Error>> {
+pub async fn list_items(pool: &PgPool) -> Result<Vec<Item>, Box<dyn std::error::Error>> {
     // Gets a Database client from the pool asynchronously
     let client = pool.get().await?;
     // Asynchronously preparing a SQL statement
@@ -33,14 +39,14 @@ pub async fn list_items(pool: &Pool) -> Result<Vec<Item>, Box<dyn std::error::Er
     // rows.iter() iterates over each row in the returned result
     // .map(row_to_item) Applies Helper Function "row_to_item" to each row converting it to an Item Struct
     // .collect() Collects the mapped items into a Vector
-    let items = rows.iter().map(row_to_items).collect();
+    let items = rows.iter().map(row_to_item).collect();
     // Returns the Vector of Items as a Successful Result
     Ok(items)
 }
 
 // Query Function: Create Item
 // 
-pub async fn create_item(pool: &Pool, new: &CreateItem) -> Result<Item, Box<dyn std::error::Error>> {
+pub async fn create_item(pool: &PgPool, new: &CreateItem) -> Result<Item, Box<dyn std::error::Error>> {
     // 
     let client = pool.get().await?;
 
@@ -53,28 +59,28 @@ pub async fn create_item(pool: &Pool, new: &CreateItem) -> Result<Item, Box<dyn 
     ).await?;
 
     // 
-    Ok(row_to_item(&row))
+    Ok(row_to_item(&new_item[0]))
 }
 
 // Query Function: Update Item (PUT)
 // 
-pub async fn update_item(pool: &Pool, new: &UpdateItem) -> Result<Item, Box<dyn std::error::Error>> {
+pub async fn update_item(pool: &PgPool, new: &UpdateItem) -> Result<Item, Box<dyn std::error::Error>> {
     //
     let client = pool.get().await?;
     // 
-    let stmt = client.prepare("UPDATE items SET name = $1, description = $2 WHERE id = $3 RETURNING id, name, descripion, created_at").await?;
+    let stmt = client.prepare("UPDATE items SET name = $1, description = $2 WHERE id = $3 RETURNING id, name, description, created_at").await?;
     // 
-    let updated_item = client.query_ones(
+    let updated_item = client.query_one(
         &stmt,
         &[&new.name, &new.description, &new.id]
     ).await?;
     // 
-    Ok(row_to_item(&row))
+    Ok(row_to_item(&updated_item))
 }
 
 // Query Function: Delete Item (DELETE)
 // 
-pub async fn delete_item(pool: &Pool, target: &DeleteItem) -> Result<u64, Box<dyn std::error:Error>> {
+pub async fn delete_item(pool: &PgPool, target: &DeleteItem) -> Result<u64, Box<dyn std::error::Error>> {
     let client = pool.get().await?;
     let stmt = client.prepare("DELETE FROM items WHERE id = $1").await?;
     let result = client.execute(&stmt, &[&target.id]).await?;
