@@ -101,7 +101,7 @@ pub async fn delete_item_handler(pool: web::Data<PgPool>, payload: web::Json<Del
 }
 
 // Handler - Get Workspace Column Names
-pub async fn get_workspace_column_name_handler(pool: web::Data<PgPool>) -> HttpResponse {
+pub async fn get_workspace_column_names_handler(pool: web::Data<PgPool>) -> HttpResponse {
     // 
     match get_workspace_column_names(&pool).await {
         Ok(columns) => HttpResponse::Ok().json(columns),
