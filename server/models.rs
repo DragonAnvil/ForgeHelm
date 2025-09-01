@@ -110,3 +110,41 @@ pub struct UpdateWorkspaceTool {
 pub struct DeleteWorkspaceTool {
     pub id: i32,
 }
+
+
+// Spreadsheets Structs ------------------------------------------
+
+// Spreadsheets
+#[derive(Serialize)]
+pub struct Spreadsheets {
+    pub id: i32,
+    pub user_id: i32,
+    pub owner: String,
+    pub name: String,
+    pub description: String,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
+}
+
+// Create Spreadsheet
+#[derive(Deserialize)]
+pub struct CreateSpreadsheet {
+    pub owner: String,
+    pub name: String,
+    pub description: String,
+}
+
+// Update Spreadsheet
+#[derive(Deserialize)]
+pub struct UpdateSpreadsheet {
+    pub id: i32,
+    pub owner: Option<String>,
+    pub name: Option<String>,
+    pub description: Option<String>,
+}
+
+// Delete Spreadsheet
+#[derive(Deserialize)]
+pub struct DeleteSpreadsheet {
+    pub id: i32,
+}
