@@ -7,6 +7,7 @@ use crate::handlers::{
     create_item_handler,
     update_item_handler,
     delete_item_handler,
+    get_workspace_columns_handler,
     list_workspaces_handler,
     create_workspace_handler,
     update_workspace_handler,
@@ -22,6 +23,9 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
                 .route(web::post().to(create_item_handler))         // POST     /items
                 .route(web::put().to(update_item_handler))          // PUT      /items
                 .route(web::delete().to(delete_item_handler))       // DELETE   /items
+        )
+        .service(
+            web::resource(web::get().to(get_workspace_columns_handler))
         )
         .service(
             web::resource("/workspaces")
