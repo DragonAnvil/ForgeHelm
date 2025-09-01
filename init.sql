@@ -100,3 +100,6 @@ EXECUTE PROCEDURE update_updated_at_column();
 -- Granting Priviledges to users (forgehelm_users)
 GRANT ALL PRIVILEGES ON TABLE items TO forgehelm_user;
 GRANT ALL PRIVILEGES ON SEQUENCE items_id_seq TO forgehelm_user;
+
+GRANT ALL PRIVILEGES ON TABLE workspaces TO forgehelm_user;
+GRANT ALL PRIVILEGES ON SEQUENCE workspaces_id_seq TO forgehelm_user;

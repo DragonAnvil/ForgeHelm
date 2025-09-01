@@ -22,6 +22,8 @@
 
 16. routes.rs updated for workspace routes
 
+17. actix_cors added to main.rs to allow frontend comms with backend
+
 Flowchart
 Routes.rs > Handlers.rs > Query.rs > Models.rs
 

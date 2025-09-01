@@ -124,10 +124,16 @@ fn row_to_workspace(row: &Row) -> Workspace {
 // Return Vector of Workspace Structs or standard error
 pub async fn list_workspaces(pool: &PgPool) -> Result<Vec<Workspace>, Box<dyn std::error::Error>> {
     // Gets a Database client from the pool asynchronously
-    let client = pool.get().await?;
+    let client = match pool.get().await {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("Error getting DB client: {:?}", e);
+            return Err(Box::new(e));
+        }
+    };
     // Asynchronously preparing a SQL statement
     // SQL statement to fetch all items ordered by creation date (newest first)
-    let stmt = client.prepare(
+    let stmt = match client.prepare(
         "SELECT 
             id,
             user_id, 
@@ -138,19 +144,31 @@ pub async fn list_workspaces(pool: &PgPool) -> Result<Vec<Workspace>, Box<dyn st
             updated_at 
         FROM workspaces 
         ORDER BY created_at DESC"
-    ).await?;
+    ).await {
+        Ok(s) => s,
+        Err(e) => {
+            eprintln!("Error preparing SQL Statement: {:?}", e);
+            return Err(Box::new(e));
+        }
+    };
     // Excute prepared SQL statement
     // rows is a Vector of Database rows returned by Query
     // query() takes reference to statement (stmt) and &[] parameters
     // &[] is empty slice, meaning no parameters needed on a GET stmt (no $1 or $2 needed)
-    let rows = client.query(&stmt, &[]).await?;
+    let rows = match client.query(&stmt, &[]).await {
+        Ok(r) => r,
+        Err(e) => {
+            eprintln!("Error executing query: {:?}", e);
+            return Err(Box::new(e));
+        }
+    };
     // items contains a Vec<Item> containing all items in the database
     // rows.iter() iterates over each row in the returned result
     // .map(row_to_item) Applies Helper Function "row_to_item" to each row converting it to an Item Struct
     // .collect() Collects the mapped items into a Vector
-    let items = rows.iter().map(row_to_workspace).collect();
+    let workspaces: Vec<Workspace> = rows.iter().map(row_to_workspace).collect();
     // Returns the Vector of Items as a Successful Result
-    Ok(items)
+    Ok(workspaces)
 }
 
 // Query Function: Create Workspace
