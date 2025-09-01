@@ -14,8 +14,8 @@
 11. crud.bat created to test API endpoints in terminal
 12. frontend added, dev.bat added to script starting backend & frontend
 
-Future:
-- Need to add/update queries/models/handlers/routes for all the existing tables
+13. models.rs updated for workspaces, workspace_tools, and spreadsheet Structs
+
 
 Flowchart
 Routes.rs > Handlers.rs > Query.rs > Models.rs

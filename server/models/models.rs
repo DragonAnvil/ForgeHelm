@@ -38,14 +38,14 @@ pub struct DeleteItem {
 
 // Public Struct - Workspaces
 #[derive(Serialize)]
-pub struct Workspaces {
+pub struct Workspace {
     pub id: i32,
     pub user_id: i32,
     pub name: String,
     pub description: String,
     pub owner: String,
-    updated_at: DateTime<Utc>,
-    created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+    pub created_at: DateTime<Utc>,
 }
 
 // Create Workspace
@@ -83,8 +83,8 @@ pub struct WorkspaceTools {
     pub description: String,
     pub doctype: String,            // SQL table schema is "type", might need to revisit
     pub owner: String,
-    updated_at: DateTime<Utc>,
-    created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+    pub created_at: DateTime<Utc>,
 }
 
 // Create WorkspaceTool
@@ -122,8 +122,8 @@ pub struct Spreadsheets {
     pub owner: String,
     pub name: String,
     pub description: String,
-    created_at: DateTime<Utc>,
-    updated_at: DateTime<Utc>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
 }
 
 // Create Spreadsheet
