@@ -111,7 +111,7 @@ pub async fn delete_item(pool: &PgPool, target: &DeleteItem) -> Result<u64, Box<
 fn row_to_workspace(row: &Row) -> Workspace {
     Workspace {
         id: row.get("id"),
-        user_id: row.get("user_id"),
+        user_id: row.get::<_, Option<i32>>("user_id"),
         name: row.get("name"),
         description: row.get("description"),
         owner: row.get("owner"),
@@ -127,12 +127,17 @@ pub async fn get_workspace_column_names(pool: &PgPool) -> Result<Vec<String>, Bo
     let client = pool.get().await?;
     //
     let stmt = client.prepare(
-        "SELECT column_name FROM information_schema.columns WHERE table_name = 'workspaces' ORDER BY ordinal_position"
+        "SELECT * FROM workspaces LIMIT 0"
     ).await?;
     //
-    let rows = client.query(&stmt, &[]).await?;
+    //let rows = client.query(&stmt, &[]).await?;
     //
-    let columns = rows.iter().map(|row| row.get::<_, String>("column_name")).collect();
+    let columns: Vec<String> = stmt
+        .columns()
+        .iter()
+        .map(|col| col.name().to_string())
+        .filter(|name| name != "id" && name != "user_id")
+        .collect();
     Ok(columns)
 }
 
@@ -195,7 +200,7 @@ pub async fn create_workspace(pool: &PgPool, new: &CreateWorkspace) -> Result<Wo
 
     // Prepare POST request statement
     let stmt = client.prepare(
-        "INSERT INTO workspaces (name, description, owner) VALUES ($1, $2, $3) RETURNING id, name, description, owner, created_at, updated_at").await?;
+        "INSERT INTO workspaces (name, description, owner) VALUES ($1, $2, $3) RETURNING id, user_id, name, description, owner, created_at, updated_at").await?;
     // 
     let new_workspace = client.query(
         &stmt, 

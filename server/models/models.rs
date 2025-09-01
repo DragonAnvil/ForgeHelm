@@ -40,7 +40,7 @@ pub struct DeleteItem {
 #[derive(Serialize)]
 pub struct Workspace {
     pub id: i32,
-    pub user_id: i32,
+    pub user_id: Option<i32>,           // Return to this later
     pub name: String,
     pub description: String,
     pub owner: String,
