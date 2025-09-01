@@ -120,6 +120,22 @@ fn row_to_workspace(row: &Row) -> Workspace {
     }
 }
 
+// Query Function: Get Columns for Workspaces Table
+// 
+pub async fn get_workspace_column_names(pool: &PgPool) -> Result<Vec<String>, Box(dyn std::error::Error>>) {
+    // 
+    let client = pool.get().await?;
+    //
+    let stmt = client.prepare(
+        "SELECT column_name FROM information_schema.columns WHERE table_name = 'workspaces' ORDER BY ordinal_position"
+    ).await?;
+    //
+    let row = client.query(&stmt, &[]).await?;
+    //
+    let columns = rows.iter().map(|row| row.get::<_, String>("column_name")).collect();
+    Ok(columns)
+}
+
 // Query Function: Get All Workspaces
 // Return Vector of Workspace Structs or standard error
 pub async fn list_workspaces(pool: &PgPool) -> Result<Vec<Workspace>, Box<dyn std::error::Error>> {

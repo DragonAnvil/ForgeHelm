@@ -24,6 +24,10 @@
 
 17. actix_cors added to main.rs to allow frontend comms with backend
 
+18. detailed error handling and logging added to list_workspaces query
+
+19. get_workspace_columns_handler added to routes.rs
+
 Flowchart
 Routes.rs > Handlers.rs > Query.rs > Models.rs
 
