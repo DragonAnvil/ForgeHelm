@@ -16,3 +16,23 @@
 
 Future:
 - Need to add/update queries/models/handlers/routes for all the existing tables
+
+Flowchart
+Routes.rs > Handlers.rs > Query.rs > Models.rs
+
+CRUD to Setup
+*   Workspaces
+    GET
+    POST
+    PUT
+    DELETE
+*   Workspace Tools
+    GET
+    POST
+    PUT
+    DELETE
+*   Spreadsheets
+    GET
+    POST
+    PUT
+    DELETE

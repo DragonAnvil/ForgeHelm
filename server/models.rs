@@ -33,3 +33,41 @@ pub struct UpdateItem {
 pub struct DeleteItem {
     pub id: i32,                        // Needed to find correct Item to Delete in Query
 }
+
+// Workspaces Table Structs ------------------------------------
+
+// Public Struct - Workspaces
+#[derive(Serialize)]
+pub struct Workspaces {
+    pub id: i32,
+    pub user_id: i32,
+    pub name: String,
+    pub description: String,
+    pub owner: String,
+    updated_at: DateTime<Utc>,
+    created_at: DateTime<Utc>,
+}
+
+// Create Workspace
+#[derive(Deserialize)]
+pub struct CreateWorkspace {
+    pub name: String,
+    pub description: String,
+    pub owner: String,
+}
+
+// Update Workspace
+#[derive(Deserialize)]
+pub struct UpdateWorkspace {
+    pub id: i32,
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub owner: Option<String>,
+}
+
+// Delete Workspace
+#[derive(Deserialize)]
+pub struct DeleteWorkspace {
+    pub id: i32,
+}
+
